@@ -4,6 +4,8 @@ A practical audit toolkit for Next.js content sites. Catches the things that sil
 
 Built and battle-tested on [Male Optimal](https://maleoptimal.co.uk), a men's health content site with 300+ MDX articles.
 
+> **Works with Claude Code, Cursor, Windsurf, and any AI coding agent.** The `AUDIT-PROMPT.md` file is a ready-to-run prompt you can paste directly into Claude Code (`claudex`), use as a custom slash command, or drop into any agentic workflow. Works with the Claude Agent SDK, MCP servers, and CI pipelines.
+
 ---
 
 ## What it checks
@@ -197,6 +199,39 @@ The TypeScript affiliate link checker exits with code 1 on failure, making it CI
 ```
 
 The Python scripts output to stdout and can be piped into CI checks similarly.
+
+---
+
+## Using with AI coding agents
+
+The `AUDIT-PROMPT.md` file is designed to run inside any AI agentic workflow, not just Claude Code.
+
+**Claude Code**
+```bash
+claudex "$(cat AUDIT-PROMPT.md)"
+# or with a custom slash command:
+# /project:audit
+```
+
+**Cursor / Windsurf / Copilot Workspace**
+Paste `AUDIT-PROMPT.md` into the agent chat or add it as a custom rule/instruction file. The prompt is plain Markdown with bash and Python code blocks — any agent that can run shell commands will handle it.
+
+**Claude Agent SDK / MCP**
+The prompt works as a task you hand to a Claude agent via the SDK. Each check is a self-contained bash or Python block, so you can also break them into individual MCP tool calls if you're building a custom audit server.
+
+**CI / GitHub Actions**
+The Python scripts exit with code 1 on failure, making them CI-ready:
+```yaml
+- name: Audit content site
+  run: |
+    pip install pyyaml
+    SITE_REPO=${{ github.workspace }} python3 scripts/crawl_404s.py
+    SITE_REPO=${{ github.workspace }} python3 scripts/seo_check.py
+    SITE_REPO=${{ github.workspace }} python3 scripts/audit_structure.py
+```
+
+**Vibe coding / no-code AI builders**
+If you're building your Next.js site with Lovable, Bolt, v0, or similar tools, you can run this toolkit against the exported repo to catch issues before deploying.
 
 ---
 
